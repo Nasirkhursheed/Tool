@@ -181,7 +181,7 @@
     <section class="tool-grid" id="tools">
         <div class="tool-card">
             <i class="fas fa-file-image tool-icon"></i>
-            <h3>Image Compressor</h3><a href=-"img-compressed.html-here.html" class="tool-link">
+            <h3>Image Compressor</h3>-tool-<a href=-"img-compressed.html-here.html" class="tool-link">
     <i class="fas fa-file-image tool-icon"></i>
     <h3>Image Compressor</h3>
     <p>Reduce image size without</p>
