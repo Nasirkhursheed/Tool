@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Free Online Image Compressor - Reduce image file size while maintaining quality. Supports JPEG, PNG, and WEBP formats.">
+    <meta name="keywords" content="image compressor, optimize images, reduce image size, online image converter">
+    <title>Online Image Compression Tool | Free Image Optimizer</title>
+    <link rel="canonical" href="https://yourdomain.com/image-compressor">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: Arial, sans-serif; line-height: 1.6; max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .header-ad { text-align: center; margin: 20px 0; }
+        .container { display: flex; flex-wrap: wrap; gap: 20px; margin: 20px 0; }
+        .main-content { flex: 3; min-width: 300px; }
+        .sidebar { flex: 1; min-width: 250px; }
+        .upload-section { border: 2px dashed #ccc; padding: 30px; text-align: center; margin-bottom: 20px; }
+        #preview { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; margin-top: 20px; }
+        .image-card { border: 1px solid #ddd; padding: 10px; border-radius: 5px; }
+        .compression-controls { margin: 20px 0; display: flex; flex-wrap: wrap; gap: 15px; align-items: center; }
+        .ad-unit { background: #f5f5f5; padding: 20px; margin: 15px 0; text-align: center; }
+        button { background: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        @media (max-width: 768px) { .container { flex-direction: column; } }
+    </style>
+</head>
+<body>
+    <!-- Header Ad Unit -->
+    <div class="header-ad">
+        <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-1256910256567734" data-ad-slot="1256910256567734" data-ad-format="auto" data-full-width-responsive="true"></ins>
+        <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+    </div>
+
+    <main class="container">
+        <div class="main-content">
+            <h1>Online Image Compressor</h1>
+            <div class="upload-section">
+                <input type="file" id="imageInput" accept="image/*" multiple hidden>
+                <button onclick="document.getElementById('imageInput').click()">Choose Images</button>
+                <p>or drag and drop images here</p>
+                <div id="preview"></div>
+            </div>
+
+            <div class="compression-controls">
+                <label>Quality: <input type="range" id="quality" min="0" max="1" step="0.1" value="0.7"></label>
+                <button onclick="compressImages()">Compress All</button>
+            </div>
+        </div>
+
+        <!-- Sidebar Ad Unit -->
+        <div class="sidebar">
+            <div class="ad-unit">
+                <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXXXXXXXXXXXXXX" data-ad-slot="0987654321" data-ad-format="auto" data-full-width-responsive="true"></ins>
+                <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer Ad Unit -->
+    <div class="header-ad">
+        <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXXXXXXXXXXXXXX" data-ad-slot="1122334455" data-ad-format="auto" data-full-width-responsive="true"></ins>
+        <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+    </div>
+
+    <script>
+        let files = [];
+        const dropZone = document.querySelector('.upload-section');
+
+        // Drag and drop handlers
+        dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.style.borderColor = '#007bff'; });
+        dropZone.addEventListener('dragleave', () => { dropZone.style.borderColor = '#ccc'; });
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.style.borderColor = '#ccc';
+            files = e.dataTransfer.files;
+            handleFiles(files);
+        });
+
+        // File input handler
+        document.getElementById('imageInput').addEventListener('change', (e) => {
+            files = e.target.files;
+            handleFiles(files);
+        });
+
+        // File processing function
+        function handleFiles(files) {
+            const preview = document.getElementById('preview');
+            preview.innerHTML = '';
+            Array.from(files).forEach(file => {
+                const reader = new FileReader();
+                reader.onload = (e) => createImageCard(file, e.target.result);
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // Create image preview card
+        function createImageCard(file, imgSrc) {
+            const preview = document.getElementById('preview');
+            const card = document.createElement('div');
+            card.className = 'image-card';
+            card.innerHTML = `
+                <p>${file.name}</p>
+                <p>Original: ${(file.size/1024).toFixed(2)}KB</p>
+                <img src="${imgSrc}" height="100">
+                <button onclick="downloadImage('${file.name}')" disabled>Download</button>
+            `;
+            preview.appendChild(card);
+        }
+
+        // Main compression function
+        async function compressImages() {
+            const quality = document.getElementById('quality').value;
+            const cards = document.querySelectorAll('.image-card');
+            
+            Array.from(cards).forEach(async (card, index) => {
+                const img = card.querySelector('img');
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                
+                canvas.width = img.naturalWidth;
+                canvas.height = img.naturalHeight;
+                ctx.drawImage(img, 0, 0);
+
+                const compressedBlob = await new Promise(resolve => 
+                    canvas.toBlob(resolve, 'image/jpeg', quality)
+                );
+
+                const downloadBtn = card.querySelector('button');
+                downloadBtn.disabled = false;
+                downloadBtn.onclick = () => {
+                    const link = document.createElement('a');
+                    link.download = `compressed_${files[index].name}`;
+                    link.href = URL.createObjectURL(compressedBlob);
+                    link.click();
+                };
+
+                card.querySelector('p:nth-child(2)').innerHTML += 
+                    ` | Compressed: ${(compressedBlob.size/1024).toFixed(2)}KB`;
+            });
+        }
+    </script>
+</body>
+</html>
